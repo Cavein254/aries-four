@@ -5,7 +5,6 @@ const bcrypt = require('bcryptjs');
 import { NextResponse } from 'next/server';
 
 export default async (req: Request) => {
-  console.log('on api');
   if (req.method === 'POST') {
     const { name, email, password } = req.body;
     console.log(req.body);
