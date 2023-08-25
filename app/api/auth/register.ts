@@ -5,6 +5,9 @@ const bcrypt = require('bcryptjs');
 import { NextResponse } from 'next/server';
 
 export default async (req: Request) => {
+  console.log('This function is called');
+  console.log('This function is called');
+  console.log('This function is called');
   if (req.method === 'POST') {
     const { name, email, password } = req.body;
     console.log(req.body);

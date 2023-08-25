@@ -1,5 +1,6 @@
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import { PrismaClient } from '@prisma/client';
+import { compare } from 'bcryptjs';
 import { randomBytes, randomUUID } from 'crypto';
 import { type NextAuthOptions } from 'next-auth';
 import type { Adapter } from 'next-auth/adapters';
@@ -10,10 +11,11 @@ import GitHubProvider from 'next-auth/providers/github';
 const prisma = new PrismaClient();
 
 export const authOptions: NextAuthOptions = {
+  debug: process.env.NODE_ENV === 'development',
   session: {
     strategy: 'database',
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-    updateAge: 24 * 60 * 60, // 24 hours
+    maxAge: 2 * 30 * 24 * 60 * 60, // 60 days
+    updateAge: 14 * 24 * 60 * 60, // 14 days
     generateSessionToken: () => {
       return randomUUID?.() ?? randomBytes(32).toString('hex');
     },
@@ -38,9 +40,24 @@ export const authOptions: NextAuthOptions = {
           placeholder: 'password',
         },
       },
-      async authorize(credentials) {
-        const user = { id: '1', name: 'Ethan', email: 'test@test.com' };
-        return user;
+      async authorize(credentials: { email: string; password: string }) {
+        const { password, email } = credentials;
+        if (!email || !password) {
+          return null;
+        }
+        const user = await prisma.user.findUnique({
+          where: {
+            email,
+          },
+        });
+        if (!user || !compare(password, user.password)) {
+          return null;
+        }
+        return {
+          id: user.id,
+          email: user.name,
+          username: user.name,
+        };
       },
     }),
   ],
