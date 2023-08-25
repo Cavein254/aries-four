@@ -1,4 +1,4 @@
-import { PrismaAdapter } from '@auth/prisma-adapter';
+import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { PrismaClient } from '@prisma/client';
 import { compare } from 'bcryptjs';
 import { randomBytes, randomUUID } from 'crypto';
@@ -14,6 +14,7 @@ export const authOptions: NextAuthOptions = {
   debug: process.env.NODE_ENV === 'development',
   session: {
     strategy: 'database',
+    jwt: false,
     maxAge: 2 * 30 * 24 * 60 * 60, // 60 days
     updateAge: 14 * 24 * 60 * 60, // 14 days
     generateSessionToken: () => {
@@ -71,14 +72,14 @@ export const authOptions: NextAuthOptions = {
         },
       };
     },
-    jwt: ({ token, user }) => {
-      if (user) {
-        return {
-          ...token,
-          id: user.id,
-        };
-      }
-    },
+    // jwt: ({ token, user }) => {
+    //   if (user) {
+    //     return {
+    //       ...token,
+    //       id: user.id,
+    //     };
+    //   }
+    // },
   },
 };
 
