@@ -42,7 +42,6 @@ export async function DELETE(
 ) {
   try {
     const id = params.id;
-    const data = await request.json();
     await prisma.user.delete({
       where: { id },
     });

@@ -1,12 +1,24 @@
+import { PrismaAdapter } from '@auth/prisma-adapter';
+import { PrismaClient } from '@prisma/client';
+import { randomBytes, randomUUID } from 'crypto';
 import { type NextAuthOptions } from 'next-auth';
+import type { Adapter } from 'next-auth/adapters';
 import NextAuth from 'next-auth/next';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GitHubProvider from 'next-auth/providers/github';
 
+const prisma = new PrismaClient();
+
 export const authOptions: NextAuthOptions = {
   session: {
-    strategy: 'jwt',
+    strategy: 'database',
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+    updateAge: 24 * 60 * 60, // 24 hours
+    generateSessionToken: () => {
+      return randomUUID?.() ?? randomBytes(32).toString('hex');
+    },
   },
+  adapter: PrismaAdapter(prisma) as Adapter,
   providers: [
     GitHubProvider({
       clientId: process.env.GITHUB_ID as string,
