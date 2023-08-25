@@ -18,8 +18,8 @@ export default async function (
         'Access-Control-Allow-Origin': '*',
       },
       body: JSON.stringify(data),
-    }).then(async (res) => await res.json());
+    }).then(async (res) => console.log(res));
   } catch (err) {
-    console.log('error occured');
+    console.log(err);
   }
 }

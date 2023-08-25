@@ -27,6 +27,25 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
+  callbacks: {
+    session: ({ session, token }) => {
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: token.id,
+        },
+      };
+    },
+    jwt: ({ token, user }) => {
+      if (user) {
+        return {
+          ...token,
+          id: user.id,
+        };
+      }
+    },
+  },
 };
 
 const handler = NextAuth(authOptions);
